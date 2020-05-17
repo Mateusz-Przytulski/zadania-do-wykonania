@@ -1,0 +1,67 @@
+<!-- nagłówek -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	<span id="navbar" class="navbar-text mx-auto">
+    {{ config?.title | uppercase }}
+  </span>
+</nav>
+<!-- koniec -->
+
+<div class="container space">
+	<div class="text">
+		<!-- pokazanie możliwości dodania -->
+		<div class="form-inline">
+			<ng-container *ngIf="zamienPrzycisk; then pokaz else zamknij"></ng-container>
+			<ng-template #zamknij>
+				<button class="btn col-2 offset-10" (click)="zamienaPrzycisku()">Dodaj zadanie</button>
+			</ng-template>
+			<ng-template #pokaz>
+				<button class="btn col-2 offset-10" (click)="zamienaPrzycisku()">Zakończ</button>
+			</ng-template>
+		</div>
+		<!-- koniec -->
+
+		<!-- dodanie nowgo zadania -->
+		<div class="form-inline" *ngIf="zamienPrzycisk">
+			<input type="text" class="col-8" placeholder="{{config?.nameTask}}" [(ngModel)]="nazwaZadania">
+			<input type="date" class="col-2" [(ngModel)]="dataWykonania">
+			<button class="btn mx-auto" (click)="utworzZadanie()"
+        [disabled]="nazwaZadania === '' || dataWykonania === ''">Dodaj <i class='fas fa-plus-circle'></i></button>
+		</div>
+		<!-- koniec -->
+
+	</div>
+	<div *ngIf="zadania.length > 0">
+		<table class="space">
+			<tr>
+				<th style="width:70%">Zadanie i data</th>
+				<th>Dodaj do wykonanych</th>
+				<th>Skasuj</th>
+			</tr>
+			<ng-container *ngFor="let zadanie of zadania; let i = index" [ngSwitch]="zadanie.skonczone">
+				<tr *ngSwitchCase="false">
+					<td>{{ i + 1}}. {{ zadanie.nazwa_zadania }} - {{ zadanie.doKiedy | date: 'dd.MM.yyyy' }} </td>
+					<td><button class="btn mx-auto" (click)="ukonczoneZadanie(zadanie)"><i class="fa fa-check"></i></button>
+					</td>
+					<td><button class="btn mx-auto" (click)="skasujZadanie(zadanie)"><i class="fa fa-remove"></i></button>
+					</td>
+				</tr>
+			</ng-container>
+		</table>
+
+		<table class="space">
+			<tr>
+				<th style="width:100%">Ukończone</th>
+			</tr>
+			<tr *ngFor="let zadanie of zadania; let i = index" [ngSwitch]="zadanie.skonczone">
+				<span class="skonczone" *ngSwitchCase="true"> {{ zadanie.nazwa_zadania }} </span>
+			</tr>
+		</table>
+	</div>
+
+	<div class="space">
+		<h1 *ngIf="zadania.length === 0">Brak zadań :)</h1>
+		<button type="button" class="btn btn-primary" *ngIf="zadania.length > 0"
+      (click)="wyczyscListeZadan()">Wyczyść</button>
+	</div>
+
+</div>
